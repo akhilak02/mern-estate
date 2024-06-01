@@ -1,8 +1,11 @@
+import SignUp from "../../components/authentication/SignUp"
 
 
 function SignUpPage() {
   return (
-    <div>SignUpPage</div>
+    <>
+    <SignUp/>
+    </>
   )
 }
 
