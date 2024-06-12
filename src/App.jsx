@@ -1,6 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import UserRouter from "./routes/UserRouter"
 import Header from "./components/Header/Header"
+import { ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
 
@@ -11,6 +13,7 @@ function App() {
     <Routes>
       <Route path="/*" element={<UserRouter/>}/>
     </Routes>
+    <ToastContainer/>
     </BrowserRouter>
   )
 }
