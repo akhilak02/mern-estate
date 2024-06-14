@@ -7,6 +7,7 @@ import * as yup from "yup";
 
 function SignUp() {
   const [loading, setLoading] = useState(false);
+  const[visible,setVisible]=useState(false)
   const navigate=useNavigate()
 
   const formik = useFormik({
@@ -32,13 +33,14 @@ function SignUp() {
         if (data.success) {
           toast.success("successfully sign up");
           setLoading(false);
-          navigate("/")
+          navigate("/sign-in")
         } else {
           toast.error(data.err_msg);
           setLoading(false);
         }
         console.log(data);
       } catch (error) {
+        toast.error(error?.message)
         console.error(error);
         setLoading(false);
       }
@@ -67,14 +69,25 @@ function SignUp() {
           onChange={formik.handleChange}
         />
         <p className="text-sm text-red-700">{formik.errors.email}</p>
-        <input
-          type="text"
-          placeholder="password"
-          className="border p-3 rounded-lg"
-          id="password"
-          value={formik.values.password}
-          onChange={formik.handleChange}
-        />
+        <div className="relative">
+          <input
+            type={visible ? "text" : "password"}
+            placeholder="password"
+            className="border p-3 rounded-lg w-full "
+            id="password"
+            value={formik.values.password}
+            onChange={formik.handleChange}
+          />
+          <i
+            className={`fa-solid  ${
+              visible ? "fa-eye" : "fa-eye-slash"
+            } absolute right-1 p-4 text-gray-500 `}
+            onClick={() => {
+              setVisible(!visible);
+            }}
+          ></i>
+        </div>
+
         <p className="text-sm text-red-700">{formik.errors.password}</p>
         <button
           type="submit"
@@ -92,7 +105,7 @@ function SignUp() {
       <p className="text-slate-600">
         Have an account?
         <Link to="/sign-in">
-          <span className="text-blue-700">Sign in</span>
+          <span className="text-blue-700">Sign Up</span>
         </Link>
       </p>
     </div>
