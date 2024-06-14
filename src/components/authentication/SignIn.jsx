@@ -1,14 +1,16 @@
 import axios from "axios";
 import { useFormik } from "formik";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as yup from "yup";
-
+import { signInStart,signInSuccess,signInFailure } from "../../redux/slices/userSlice";
 function SignIn() {
-  const [loading, setLoading] = useState(false);
+ const{loading}=useSelector((state)=>state.user)
   const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
+  const dispatch=useDispatch()
 
   const formik = useFormik({
     initialValues: {  email: "", password: "" },
@@ -24,7 +26,7 @@ function SignIn() {
         ),
     }),
     onSubmit: async (values) => {
-      setLoading(true);
+      dispatch(signInStart())
       try {
         const { data } = await axios.post(
           "http://localhost:3001/backend/auth/signin",
@@ -32,17 +34,17 @@ function SignIn() {
         );
         if (data.success) {
           toast.success("successfully signed In");
-          setLoading(false);
+         dispatch(signInSuccess(data))
           navigate("/");
         } else {
           toast.error(data.err_msg);
-          setLoading(false);
+          dispatch(signInFailure())
         }
         console.log(data);
       } catch (error) {
         toast.error(error?.message)
         console.error(error);
-        setLoading(false);
+        dispatch(signInFailure())
       }
     },
   });
