@@ -4,19 +4,22 @@ import Header from "./components/Header/Header"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css";
 import { Provider } from "react-redux";
-import { store } from "./redux/store";
+import { persistor, store } from "./redux/store";
+import { PersistGate } from "redux-persist/integration/react";
 
 function App() {
 
 
   return (
     <Provider store={store}>
-      <BrowserRouter>
-        <Header />
-        <Routes>
-          <Route path="/*" element={<UserRouter />} />
-        </Routes>
-      </BrowserRouter>
+      <PersistGate loading={null} persistor={persistor}>
+        <BrowserRouter>
+          <Header />
+          <Routes>
+            <Route path="/*" element={<UserRouter />} />
+          </Routes>
+        </BrowserRouter>
+      </PersistGate>
       <ToastContainer />
     </Provider>
   );
