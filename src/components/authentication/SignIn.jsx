@@ -6,6 +6,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as yup from "yup";
 import { signInStart,signInSuccess,signInFailure } from "../../redux/slices/userSlice";
+import OAuth from "./OAuth";
+
 function SignIn() {
  const{loading}=useSelector((state)=>state.user)
   const [visible, setVisible] = useState(false);
@@ -38,13 +40,13 @@ function SignIn() {
           navigate("/");
         } else {
           toast.error(data.err_msg);
-          dispatch(signInFailure())
+          dispatch(signInFailure(data.message))
         }
         console.log(data);
       } catch (error) {
         toast.error(error?.message)
         console.error(error);
-        dispatch(signInFailure())
+        dispatch(signInFailure(error.message))
       }
     },
   });
@@ -94,6 +96,7 @@ function SignIn() {
             "Sign up"
           )}
         </button>
+        <OAuth/>
       </form>
       <p className="text-slate-600">
         Don&apos;t Have an account?

@@ -1,8 +1,11 @@
+import Profile from "../../components/profile/Profile"
 
 
 function ProfilePage() {
   return (
-    <div>ProfilePage</div>
+    <>
+      <Profile/>
+    </>
   )
 }
 

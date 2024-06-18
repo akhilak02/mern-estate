@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as yup from "yup";
+import OAuth from "./OAuth";
 
 function SignUp() {
   const [loading, setLoading] = useState(false);
@@ -101,6 +102,7 @@ function SignUp() {
             "Sign up"
           )}
         </button>
+        <OAuth/>
       </form>
       <p className="text-slate-600">
         Have an account?
