@@ -5,6 +5,7 @@ import SigninPage from "../pages/client/SigninPage";
 import SignUpPage from "../pages/client/SignUpPage";
 import ProfilePage from "../pages/client/ProfilePage";
 import PrivateRoute from "../components/privateRoute/PrivateRoute";
+import CreateListingPage from "../pages/client/CreateListingPage";
 
 function UserRouter() {
   return (
@@ -16,6 +17,7 @@ function UserRouter() {
       <Route  element={<PrivateRoute />} >
       <Route path="/profile" element={<ProfilePage/>}/>
       </Route>
+      <Route path="createListing" element={<CreateListingPage/>}/>
     </Routes>
   );
 }

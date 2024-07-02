@@ -5,10 +5,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as yup from "yup";
 import OAuth from "./OAuth";
+import Avatar from "./Avatar";
+
 
 function SignUp() {
   const [loading, setLoading] = useState(false);
   const[visible,setVisible]=useState(false)
+ 
   const navigate=useNavigate()
 
   const formik = useFormik({
@@ -27,11 +30,13 @@ function SignUp() {
     onSubmit: async (values) => {
       setLoading(true);
       try {
+      
         const { data } = await axios.post(
           "http://localhost:3001/backend/auth/signup",
           { ...values }
         );
         if (data.success) {
+          formik.resetForm()
           toast.success("successfully sign up");
           setLoading(false);
           navigate("/sign-in")
@@ -50,6 +55,7 @@ function SignUp() {
 
   return (
     <div className="p-3 max-w-lg mx-auto">
+      <Avatar/>
       <h1 className="capitalize text-center text-2xl p-3">Sign Up</h1>
       <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
         <input

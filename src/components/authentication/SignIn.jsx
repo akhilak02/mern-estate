@@ -36,6 +36,7 @@ function SignIn() {
         );
         if (data.success) {
           toast.success("successfully signed In");
+          console.log(data);
          dispatch(signInSuccess(data))
           navigate("/");
         } else {

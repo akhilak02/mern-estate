@@ -11,7 +11,7 @@ function Header() {
 
   const[isOpen,setIsOPen]=useState(false)
   const {currentUser}=useSelector(state=>state.user)
- 
+
   return (
     <div className="bg-slate-200 shadow-sm">
       <div className=" flex justify-between p-3 max-w-6xl mx-auto items-center sticky top-0 z-50">
@@ -43,11 +43,12 @@ function Header() {
               </NavLink>
             ))}
           </ul>
+         
           {currentUser ? (
             <Link to="/profile">
              
               <img
-                src={currentUser?.avatar}
+                src={currentUser?.validUser.avatar}
                 alt="avatar"
                 className="rounded-full h-10 w-10 border-2 hover:cursor-pointer object-cover object-center"
               />

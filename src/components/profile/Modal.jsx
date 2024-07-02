@@ -1,68 +1,78 @@
-import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import converToBase64 from "../../utils/imageConverter";
-import { useFormik } from "formik";
-import * as yup from "yup";
-import { toast } from "react-toastify";
+
 import axios from "axios";
+import { useFormik } from "formik";
+import { useRef, useState, } from "react";
+import ReactModal from "react-modal"
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
 } from "../../redux/slices/userSlice";
-import { Link, useNavigate } from "react-router-dom";
-import DeleteProfile from "./DeleteProfile";
+import * as yup from "yup";
+import converToBase64 from "../../utils/imageConverter";
 
-function Profile() {
-  const { loading } = useSelector((state) => state.user);
-  const dispatch = useDispatch();
+
+const customStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+  },
+};
+
+
+function Modal() {
+        const { currentUser } = useSelector((state) => state.user);
+      const [image, setImage] = useState(currentUser?.avatar);
+      const [modalIsOpen, setIsOpen] = useState(false);
+  const token=useSelector(state=>state.user.token)
+
+ 
+     const { loading } = useSelector((state) => state.user);
+    
   const fileRef = useRef(null);
-  const navigate=useNavigate()
-  const { currentUser } = useSelector((state) => state.user);
-  const [image, setImage] = useState(currentUser?.avatar);
-  const {token} = useSelector((state) => state.user);
-  const getBase64Image = async (file) => {
-    try {
-      const image64 = await converToBase64(file);
-      setImage(image64);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+
+  const dispatch = useDispatch();
+    const getBase64Image = async (file) => {
+      try {
+        const image64 = await converToBase64(file);
+        setImage(image64);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
   const formik = useFormik({
     initialValues: {
-      username:currentUser?.validUser?.username,
-      email: currentUser?.validUser?.email,
+      username: currentUser?.username,
+      email: currentUser?.email,
     },
-    enableReinitialize:true,
+    enableReinitialize: true,
     validationSchema: yup.object({
       username: yup.string().required().min(5).max(20),
-      email: yup
-        .string()
-        .required()
-        .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "not a valid address"),
+      email: yup.string().required().email(),
     }),
     onSubmit: async (values) => {
+      console.log(currentUser.email);
       dispatch(updateUserStart());
-          if (
-            currentUser.username === values.username &&
-            currentUser.email === values.email &&
-            currentUser.mobile === values.mobile &&
-            currentUser.avatar === image
-          ) {
-            toast.error("There are no change");
-           loading(false)
-            return;
-          }
+      if (
+        currentUser.username === values.username &&
+        currentUser.email === values.email &&
+        currentUser.avatar === image
+      ) {
+        toast.error("There are no change");
+        dispatch(updateUserFailure());
+        return;
+      }
       try {
-        console.log(currentUser, token);
         const { data } = await axios.post(
-          `http://localhost:3001/backend/user/update/${
-            currentUser?.validUser?._id
-          }`,
+          `http://localhost:3001/backend/user/update/${currentUser._id}`,
           { ...values, avatar: image },
-
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -71,33 +81,47 @@ function Profile() {
             },
           }
         );
-     
-      
-        if(data.success){
-          dispatch(updateUserSuccess(data))
-          toast.success("profile updated succesfully")
-          navigate('/')
-        }else{
-          toast.error(data.err_msg)
-          dispatch(updateUserFailure(data.error))
-          
+        console.log(data);
+        console.log("urtrtuy");
+        if (data.success) {
+          toast.success(" profile updated successfully");
+          dispatch(updateUserSuccess(data));
+        } else {
+          toast.error(data.err_msg);
+          dispatch(updateUserFailure());
         }
+        console.log(data);
       } catch (error) {
-        console.error(error);
-        toast.error(error.message)
+        toast.error(error?.message);
         dispatch(updateUserFailure());
+        console.error(error);
       }
     },
   });
-   useEffect(() => {
-     if (!currentUser) {
-       toast.error("please login to view profile");
-       navigate("/");
-     }
-   }, [currentUser, navigate]);
-  
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
   return (
-    <div className="p-3 max-w-lg mx-auto">
+    <ReactModal
+       isOpen={modalIsOpen}
+    //   // onAfterOpen={afterOpenModal}
+       onRequestClose={closeModal}
+       style={customStyles}
+      contentLabel="Example Modal"
+       ariaHideApp={false}
+    
+    >
+      <button
+        onClick={closeModal}
+        className="absolute right-0 top-0 p-2 text-xl text-slate-300 hover:text-slate-600 "
+      >
+        <i className="fa
+        -solid fa-xmark "></i>
+      </button>
+
+      <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
       <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
         <input
@@ -122,28 +146,25 @@ function Profile() {
         <input
           type="text"
           placeholder="username"
+          
           name="username"
           className="border rounded-lg p-3"
           value={formik.values.username}
           onChange={formik.handleChange}
         />
-
         <p className="text-sm text-red-700">{formik.errors.username}</p>
         <input
           type="text"
           placeholder="email"
+          id="email"
           name="email"
+          className="border rounded-lg p-3"
           value={formik.values.email}
           onChange={formik.handleChange}
-          className="border rounded-lg p-3"
         />
+       
         <p className="text-sm text-red-700">{formik.errors.email}</p>
-        {/* <input
-          type="text"
-          placeholder="password"
-          id="password"
-          className="border rounded-lg p-3"
-        /> */}
+       
         <button
           type="submit"
           disabled={loading}
@@ -155,14 +176,10 @@ function Profile() {
             "  update"
           )}
         </button>
-        <Link className="bg-orange-300 text-white p-3 rounded-lg uppercase text-center hover:opacity-95" to="/createListing">
-        Create Listing
-        </Link>
       </form>
-
-     <DeleteProfile/>
-    </div>
+</div>
+    </ReactModal>
   );
 }
 
-export default Profile;
+export default Modal
