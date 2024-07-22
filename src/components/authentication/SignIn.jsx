@@ -1,16 +1,17 @@
 import axios from "axios";
 import { useFormik } from "formik";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as yup from "yup";
-import { signInStart,signInSuccess,signInFailure } from "../../redux/slices/userSlice";
+import { signInSuccess } from "../../redux/slices/userSlice";
 import OAuth from "./OAuth";
 
 function SignIn() {
- const{loading}=useSelector((state)=>state.user)
+
   const [visible, setVisible] = useState(false);
+  const[loading,setLoading]=useState(false)
   const navigate = useNavigate();
   const dispatch=useDispatch()
 
@@ -28,7 +29,7 @@ function SignIn() {
         ),
     }),
     onSubmit: async (values) => {
-      dispatch(signInStart())
+      setLoading(true)
       try {
         const { data } = await axios.post(
           "http://localhost:3001/backend/auth/signin",
@@ -36,18 +37,22 @@ function SignIn() {
         );
         if (data.success) {
           toast.success("successfully signed In");
-          console.log(data);
+          
          dispatch(signInSuccess(data))
           navigate("/");
+          console.log("signin data",data);
+          setLoading(false)
         } else {
           toast.error(data.err_msg);
-          dispatch(signInFailure(data.message))
+         
+          setLoading(false)
         }
-        console.log(data);
+       
       } catch (error) {
         toast.error(error?.message)
         console.error(error);
-        dispatch(signInFailure(error.message))
+     
+        setLoading(false)
       }
     },
   });
@@ -90,11 +95,12 @@ function SignIn() {
           disabled={loading}
           className="bg-slate-700 p-3 uppercase text-white rounded-lg hover:opacity-60"
         >
-          {" "}
+          
+         
           {loading ? (
             <i className="fa-solid fa-spinner animate-spin"></i>
           ) : (
-            "Sign up"
+            "Sign in"
           )}
         </button>
         <OAuth/>
@@ -102,7 +108,7 @@ function SignIn() {
       <p className="text-slate-600">
         Don&apos;t Have an account?
         <Link to="/sign-up">
-          <span className="text-blue-700">Sign in</span>
+          <span className="text-blue-700">Sign up</span>
         </Link>
       </p>
     </div>

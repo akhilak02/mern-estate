@@ -17,7 +17,7 @@ function UserRouter() {
       <Route  element={<PrivateRoute />} >
       <Route path="/profile" element={<ProfilePage/>}/>
       </Route>
-      <Route path="createListing" element={<CreateListingPage/>}/>
+      <Route path="/createListing" element={<CreateListingPage/>}/>
     </Routes>
   );
 }

@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Provider } from "react-redux";
 import { persistor, store } from "./redux/store";
 import { PersistGate } from "redux-persist/integration/react";
+import { ImageDataProvider } from "./context/ImageContext";
 
 function App() {
 
@@ -13,12 +14,14 @@ function App() {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <BrowserRouter>
-          <Header />
-          <Routes>
-            <Route path="/*" element={<UserRouter />} />
-          </Routes>
-        </BrowserRouter>
+        <ImageDataProvider>
+          <BrowserRouter>
+            <Header />
+            <Routes>
+              <Route path="/*" element={<UserRouter />} />
+            </Routes>
+          </BrowserRouter>
+        </ImageDataProvider>
       </PersistGate>
       <ToastContainer />
     </Provider>

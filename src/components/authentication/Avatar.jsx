@@ -1,17 +1,18 @@
-import { useState } from "react";
+/* eslint-disable react/prop-types */
+
 import converToBase64 from "../../utils/imageConverter";
 
 
-function Avatar() {
-    const[image,setImage]=useState(null)
-     const getBase64Image = async (file) => {
-       try {
-         const image64 = await converToBase64(file);
-         setImage(image64);
-       } catch (error) {
-         console.error(error);
-       }
-     };
+function Avatar({ image, setImage }) {
+  // const [image, setImage] = useState(null);
+  const getBase64Image = async (file) => {
+    try {
+      const image64 = await converToBase64(file);
+      setImage(image64);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div className="flex justify-center items-center">
       <div className="relative rounded-full overflow-hidden  ">

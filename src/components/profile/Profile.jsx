@@ -13,14 +13,17 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import DeleteProfile from "./DeleteProfile";
 
+
 function Profile() {
-  const { loading } = useSelector((state) => state.user);
+  const { loading, currentUser } = useSelector((state) => state.user);
+
+  const token=useSelector((state)=>state.user.token)
+  console.log("token",token);
   const dispatch = useDispatch();
   const fileRef = useRef(null);
   const navigate=useNavigate()
-  const { currentUser } = useSelector((state) => state.user);
+  console.log("current user first",currentUser);
   const [image, setImage] = useState(currentUser?.avatar);
-  const {token} = useSelector((state) => state.user);
   const getBase64Image = async (file) => {
     try {
       const image64 = await converToBase64(file);
@@ -30,10 +33,12 @@ function Profile() {
     }
   };
 
+ 
+
   const formik = useFormik({
     initialValues: {
-      username:currentUser?.validUser?.username,
-      email: currentUser?.validUser?.email,
+      username:currentUser?.username,
+      email: currentUser?.email,
     },
     enableReinitialize:true,
     validationSchema: yup.object({
@@ -46,37 +51,43 @@ function Profile() {
     onSubmit: async (values) => {
       dispatch(updateUserStart());
           if (
-            currentUser.username === values.username &&
-            currentUser.email === values.email &&
-            currentUser.mobile === values.mobile &&
-            currentUser.avatar === image
+            currentUser?.username === values?.username &&
+            currentUser?.email === values?.email &&
+            currentUser?.avatar === image
           ) {
-            toast.error("There are no change");
-           loading(false)
-            return;
+           toast.error("There are no change");
+          dispatch(updateUserFailure())
+          return;
           }
       try {
-        console.log(currentUser, token);
-        const { data } = await axios.post(
-          `http://localhost:3001/backend/user/update/${
-            currentUser?.validUser?._id
-          }`,
-          { ...values, avatar: image },
-
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              Accept: "application/json",
-              "Content-type": "application/json",
-            },
-          }
-        );
      
-      
+        const { data } = await axios.post(
+          `http://localhost:3001/backend/user/update/${currentUser?._id}`,
+          { ...values, avatar: image }, {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Accept": "application/json",
+              "Content-type": "application/json",
+            }
+          
+          }
+          
+        );
+        console.log(data,"data in up date");
+       
+    //  {validUser:currentUser?.validUser,token:currentUser?.token}
+       console.log("values in update",values);
+      console.log(image);
         if(data.success){
-          dispatch(updateUserSuccess(data))
+          dispatch(
+            updateUserSuccess({
+              validUser: data?.validUser,
+              token: token,
+            })
+          );
           toast.success("profile updated succesfully")
           navigate('/')
+           console.log("update data:", data);
         }else{
           toast.error(data.err_msg)
           dispatch(updateUserFailure(data.error))
@@ -88,18 +99,21 @@ function Profile() {
         dispatch(updateUserFailure());
       }
     },
+    
   });
+ 
    useEffect(() => {
      if (!currentUser) {
        toast.error("please login to view profile");
        navigate("/");
      }
    }, [currentUser, navigate]);
-  
+console.log("currentUser last",currentUser);
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
       <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
+     
         <input
           type="file"
           ref={fileRef}
@@ -138,12 +152,7 @@ function Profile() {
           className="border rounded-lg p-3"
         />
         <p className="text-sm text-red-700">{formik.errors.email}</p>
-        {/* <input
-          type="text"
-          placeholder="password"
-          id="password"
-          className="border rounded-lg p-3"
-        /> */}
+     
         <button
           type="submit"
           disabled={loading}
