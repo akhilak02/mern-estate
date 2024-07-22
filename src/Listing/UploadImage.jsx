@@ -10,9 +10,9 @@ function UploadImage({ formData, setFormData }) {
 
 
 
-  const { images, setImages } = useContext(ImageContext);
+  const { images, setImages,setUploading,uploading } = useContext(ImageContext);
   const [imageUploadError, setImageUploadError] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  
 
 
 

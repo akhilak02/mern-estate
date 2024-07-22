@@ -7,9 +7,9 @@ const ImageContext=createContext({});
 
 export const ImageDataProvider=({children})=>{
       const [images, setImages] = useState([]);
-    //  const formImage = new FormData();
+const [uploading, setUploading] = useState(false);
       return(
-        <ImageContext.Provider value={{images,setImages}}>
+        <ImageContext.Provider value={{images,setImages,uploading,setUploading}}>
             {children}
         </ImageContext.Provider>
       );

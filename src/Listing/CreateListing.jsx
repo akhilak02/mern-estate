@@ -1,20 +1,24 @@
-// import { useFormik } from "formik";
 
-// import *as yup from 'yup'
 
-import {  useState } from "react";
+import {  useContext, useState } from "react";
 import UploadImage from "./UploadImage";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-// import ImageContext from "../context/ImageContext";
+import ImageContext from "../context/ImageContext";
+import { useNavigate } from "react-router-dom";
 
 function CreateListing() {
+
+
 const token=useSelector(state=>state.user.token)
 const currentUser=useSelector(state=>state.user.currentUser)
-// const{formImage}=useContext(ImageContext)
-
+const{uploading}=useContext(ImageContext)
+const navigate=useNavigate()
 console.log({"currentUser":currentUser,"token":token});
+
+
+
   const[formData,setFormData]=useState({
         name: "",
         description: "",
@@ -32,7 +36,7 @@ console.log({"currentUser":currentUser,"token":token});
   })
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-console.log(formData);
+console.log( "form data",formData);
 
 
 const handleChange=(e)=>{
@@ -72,16 +76,17 @@ try {
        headers: {
          Authorization: `Bearer ${token}`,
          Accept: "application/json",
-        //  "Content-type": "multipart/form-data ",
+     
        },
      }
    );
-   console.log(data);
+   console.log("data",data);
   
            if (data.success) {
              toast.success("successfully create listing");
                setLoading(false);
                setError(data.message);
+               navigate(`/createlisting/${data?.listing?._id}`)
           
            } else {
              toast.error(data.err_msg);
@@ -125,7 +130,7 @@ try {
             value={formData.name}
             onChange={handleChange}
           />
-          {/* <p className="text-sm text-red-600">{formik.errors.name}</p> */}
+
           <textarea
             type="text"
             placeholder="Description"
@@ -136,7 +141,7 @@ try {
             onChange={handleChange}
             required
           />
-          {/* <p className="text-sm text-red-600">{formik.errors.description}</p> */}
+
           <textarea
             type="text"
             placeholder="Address"
@@ -147,7 +152,7 @@ try {
             onChange={handleChange}
             required
           />
-          {/* <p className="text-sm text-red-600">{formik.errors.address}</p> */}
+
           <div className="flex gap-6 flex-wrap">
             <div className="flex gap-2">
               <input
@@ -251,33 +256,35 @@ try {
                 )}
               </div>
             </div>
-            {formData.offer}
-            <div className="flex gap-2 items-center">
-              <input
-                type="number"
-                id="discountPrice"
-                name="discountPrice"
-                min='0'
-                max='10000000'
-                required
-                className="p-3 border border-gray-300 rounded-lg w-28 "
-                value={formData.discountPrice}
-                onChange={handleChange}
-              />
-              <div>
-                <p>Discount Price</p>
-                {formData.type === "rent" && (
-                  <span className="text-sm">(&#8377; /month)</span>
-                )}
+            {formData.offer && (
+              <div className="flex gap-2 items-center">
+                <input
+                  type="number"
+                  id="discountPrice"
+                  name="discountPrice"
+                  min="0"
+                  max="10000000"
+                  required
+                  className="p-3 border border-gray-300 rounded-lg w-28 "
+                  value={formData.discountPrice}
+                  onChange={handleChange}
+                />
+                <div>
+                  <p>Discount Price</p>
+                  {formData.type === "rent" && (
+                    <span className="text-sm">(&#8377; /month)</span>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
         <div className="flex flex-1 flex-col gap-4 ms-4">
-          <UploadImage formData={formData} setFormData={setFormData}/>
+          <UploadImage formData={formData} setFormData={setFormData} />
           <button
             type="submit"
             className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+            disabled={loading||uploading}
           >
             {loading ? (
               <i className="fa-solid fa-spinner animate-spin"></i>
