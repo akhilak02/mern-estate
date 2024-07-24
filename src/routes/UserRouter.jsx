@@ -6,6 +6,7 @@ import SignUpPage from "../pages/client/SignUpPage";
 import ProfilePage from "../pages/client/ProfilePage";
 import PrivateRoute from "../components/privateRoute/PrivateRoute";
 import CreateListingPage from "../pages/client/CreateListingPage";
+import UpdateListingPage from "../pages/client/UpdateListingPage";
 
 function UserRouter() {
   return (
@@ -18,6 +19,7 @@ function UserRouter() {
       <Route path="/profile" element={<ProfilePage/>}/>
       </Route>
       <Route path="/createListing" element={<CreateListingPage/>}/>
+      <Route path="/updateListing/:listingId" element={<UpdateListingPage/>}/>
     </Routes>
   );
 }

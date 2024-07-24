@@ -111,12 +111,17 @@ const [showListingsErr, setShowListingsErr] = useState(false);
                 <p>{listing.name}</p>
               </Link>
               <div className="flex flex-col items-center">
-                <button className="text-red-700" onClick={()=>handleListingDelete(listing._id)}>
+                <button
+                  className="text-red-700"
+                  onClick={() => handleListingDelete(listing._id)}
+                >
                   <i className="fa-solid fa-trash"></i>
                 </button>
-                <button className="text-green-700">
-                  <i className="fa-solid fa-pen-to-square"></i>
-                </button>
+                <Link to={`/updateListing/${listing._id}`}>
+                  <button className="text-green-700">
+                    <i className="fa-solid fa-pen-to-square"></i>
+                  </button>
+                </Link>
               </div>
             </div>
           ))}
