@@ -12,6 +12,7 @@ import {
 } from "../../redux/slices/userSlice";
 import { Link, useNavigate } from "react-router-dom";
 import DeleteProfile from "./DeleteProfile";
+import ShowListing from "./ShowListing";
 
 
 function Profile() {
@@ -24,6 +25,7 @@ function Profile() {
   const navigate=useNavigate()
   console.log("current user first",currentUser);
   const [image, setImage] = useState(currentUser?.avatar);
+  
   const getBase64Image = async (file) => {
     try {
       const image64 = await converToBase64(file);
@@ -109,6 +111,8 @@ function Profile() {
      }
    }, [currentUser, navigate]);
 console.log("currentUser last",currentUser);
+
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -170,6 +174,7 @@ console.log("currentUser last",currentUser);
       </form>
 
      <DeleteProfile/>
+    <ShowListing currentUser={currentUser}/>
     </div>
   );
 }
