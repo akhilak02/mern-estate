@@ -75,7 +75,7 @@ const [showListingsErr, setShowListingsErr] = useState(false);
         }
     }
 
-
+console.log("listingshow",userListings.name);
   return (
     <>
       <button
@@ -99,7 +99,7 @@ const [showListingsErr, setShowListingsErr] = useState(false);
             >
               <Link to={`/listing/${listing._id}`}>
                 <img
-                  src={listing.imageUrls[0]}
+                  src={`http://localhost:3001/${listing.imageUrls[0]})`}
                   alt="listing cover"
                   className="h-16 w-16 object-contain"
                 />

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { FaSearch} from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 function Header() {
   const navLink = [
@@ -11,6 +12,27 @@ function Header() {
 
   const[isOpen,setIsOPen]=useState(false)
   const {currentUser}=useSelector(state=>state.user)
+  const[searchTerm,setSearchTerm]=useState('')
+  const navigate=useNavigate()
+  const handleSubmit=(e)=>{
+    e.preventDefault()
+    const urlParams=new URLSearchParams(window.location.search)
+    urlParams.set('searchTerm',searchTerm)
+    const searchQuery=urlParams.toString()
+    navigate(`/search?${searchQuery}`)
+
+  }
+
+useEffect(()=>{
+
+  const urlParams=new URLSearchParams(window.location.search)
+  const searchTermFromUrl=urlParams.get('searchTerm')
+  if(searchTermFromUrl){
+    setSearchTerm(searchTermFromUrl)
+  }
+
+},[location.search])
+
 
   return (
     <div className="bg-slate-200 shadow-sm">
@@ -19,13 +41,18 @@ function Header() {
           <span className="text-gray-400">DreamLoom</span>
           <span className="text-gray-700">Realty</span>
         </h1>
-        <form className="bg-slate-100 p-2 rounded-lg ">
+        <form onClick={handleSubmit} className="bg-slate-100 p-2 rounded-lg ">
           <input
             type="text"
             placeholder="Search..."
             className=" outline-none bg-transparent w-24 sm:w-64 "
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <i className="fa-brands fa-searchengin sm:text-2xl text-slate-800 "></i>
+          <button>
+            {/* <i className="fa-brands fa-searchengin sm:text-2xl  "></i> */}
+            <FaSearch className=" text-slate-800" />
+          </button>
         </form>
         <div className="flex items-center gap-3">
           <ul className="md:flex hidden gap-5">
@@ -43,16 +70,14 @@ function Header() {
               </NavLink>
             ))}
           </ul>
-         
+
           {currentUser ? (
             <Link to="/profile">
-             
               <img
                 src={currentUser?.avatar}
                 alt="avatar"
                 className="rounded-full h-10 w-10 border-2 hover:cursor-pointer object-cover object-center"
               />
-              
             </Link>
           ) : (
             <Link to="/sign-in">

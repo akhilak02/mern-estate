@@ -68,6 +68,77 @@ function UpdateListing() {
          }
         
      }
+     
+const handleImageChange = (e) => {
+  setImages([...images, ...e.target.files]);
+};
+
+
+      const imageHandleSubmit = async () => {
+           if (images.length < 1) {
+      return toast.error('You must select at least one image');
+    }
+        if (
+          images.length > 0 &&
+          images.length + formData.imageUrls.length < 7
+        ) {
+          setUploading(true);
+          setImageUploadError(false);
+
+          const formImage = new FormData();
+          
+
+          images.forEach((image) => formImage.append("imageUrls", image));
+          setUploading(true);
+
+          try {
+            const response = axios.post(
+              "http://localhost:3001/backend/uploads/upload-images",
+              formImage,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+
+            console.log("server response", response);
+
+            if (response) {
+              console.log(
+                "uploaded image URLs:",
+                (await response).data.imageUrls
+              );
+              setFormData({
+                ...formData,
+                imageUrls: (await response).data.imageUrls,
+              });
+              setImageUploadError(false);
+              setUploading(false);
+              toast.success("images uploaded successfully");
+            } else {
+              throw new Error(response.data.message || "Image uploade failed");
+            }
+          } catch (error) {
+            console.error(error, "error uploading images");
+            toast.error(error.message || "images upload failed");
+            setUploading(false);
+            setImageUploadError("Image upload failed (2 mb max per image)");
+          } finally {
+            setUploading(false);
+          }
+        } else {
+          setImageUploadError("You can only upload 6 images per listing");
+          setUploading(false);
+        }
+      };
+
+      const handleRemoveImage = (index) => {
+        setFormData({
+          ...formData,
+          imageUrls: formData.imageUrls.filter((_, i) => i !== index),
+        });
+      };
 
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -109,67 +180,6 @@ const handleSubmit = async (e) => {
 };
 
 
-const handleImageChange = (e) => {
-  setImages([...images, ...e.target.files]);
-};
-
-
- const imageHandleSubmit = async () => {
-   if (images.length > 0 && images.length + formData.imageUrls.length < 7) {
-     setUploading(true);
-     setImageUploadError(false);
-
-     const formImage = new FormData();
-
-     images.forEach((image) => formImage.append("imageUrls", image));
-     setUploading(true);
-
-     try {
-       const response = axios.post(
-         "http://localhost:3001/backend/uploads/upload-images",
-         formImage,
-         {
-           headers: {
-             "Content-Type": "multipart/form-data",
-           },
-         }
-       );
-
-       console.log("server response", response);
-
-       if (response) {
-         console.log("uploaded image URLs:", (await response).data.imageUrls);
-         setFormData({
-           ...formData,
-           imageUrls: (await response).data.imageUrls,
-         });
-         setImageUploadError(false);
-         setUploading(false);
-         toast.success("images uploaded successfully");
-       } else {
-         throw new Error(response.data.message || "Image uploade failed");
-       }
-     } catch (error) {
-       console.error(error, "error uploading images");
-       toast.error(error.message || "images upload failed");
-       setUploading(false);
-       setImageUploadError("Image upload failed (2 mb max per image)");
-     } finally {
-       setUploading(false);
-     }
-   } else {
-     setImageUploadError("You can only upload 6 images per listing");
-     setUploading(false);
-   }
- };
-
- const handleRemoveImage = (index) => {
-   setFormData({
-     ...formData,
-     imageUrls: formData.imageUrls.filter((_, i) => i !== index),
-   });
- };
-
 
   return (
     <div className="p-3 max-w-4xl mx-auto">
@@ -190,7 +200,7 @@ const handleImageChange = (e) => {
             maxLength="62"
             minLength="5"
             required
-           value={formData.name}
+            value={formData.name}
             onChange={handleChange}
           />
           <textarea
@@ -375,7 +385,7 @@ const handleImageChange = (e) => {
                 key={index}
               >
                 <img
-                  src={url}
+                  src={`http://localhost:3001/${url}`}
                   alt={`Uploaded ${index + 1}`}
                   className="w-20 h-20 object-contain rounded-lg"
                 />

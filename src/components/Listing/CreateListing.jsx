@@ -5,8 +5,8 @@ import UploadImage from "./UploadImage";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import ImageContext from "../context/ImageContext";
 import { useNavigate } from "react-router-dom";
+import ImageContext from "../../context/ImageContext";
 
 function CreateListing() {
 

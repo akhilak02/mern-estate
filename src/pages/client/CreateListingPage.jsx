@@ -1,14 +1,16 @@
 
-import CreateListing from "../../Listing/CreateListing"
+
 
 // import CreateList from "../../Listing/createList"
+
+import CreateListing from "../../components/Listing/CreateListing"
 
 
 function CreateListingPage() {
   return (
     <>
-        <CreateListing/>
-        {/* <CreateList/> */}
+      <CreateListing/>  
+       
     </>
   )
 }

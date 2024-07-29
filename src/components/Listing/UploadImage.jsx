@@ -2,9 +2,9 @@
 
 import { useContext, useState } from "react";
 
-import ImageContext from "../context/ImageContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import ImageContext from "../../context/ImageContext";
 
 function UploadImage({ formData, setFormData }) {
 
@@ -133,7 +133,7 @@ function UploadImage({ formData, setFormData }) {
             key={index}
           >
             <img
-              src={url}
+              src={`http://localhost:3001/${url}`}
               alt={`Uploaded ${index + 1}`}
               className="w-20 h-20 object-contain rounded-lg"
             />
