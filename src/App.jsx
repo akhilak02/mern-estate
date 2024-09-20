@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import { persistor, store } from "./redux/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { ImageDataProvider } from "./context/ImageContext";
+import AdminRoute from "./routes/AdminRoute";
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
             <Header />
             <Routes>
               <Route path="/*" element={<UserRouter />} />
+              <Route path="/admin/*" element={<AdminRoute/>} />
             </Routes>
           </BrowserRouter>
         </ImageDataProvider>

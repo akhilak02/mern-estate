@@ -24,7 +24,7 @@ const [showListingsErr, setShowListingsErr] = useState(false);
             },
           }
         );
-        console.log("data",data.listings);
+        console.log("data",data);
         
         if (data.success) {
             setUserListings(data.listings);
@@ -62,6 +62,7 @@ const [showListingsErr, setShowListingsErr] = useState(false);
               },
             }
           );
+         
           if (data.success) {
            setUserListings((prev)=>prev.filter((listing)=>listing._id!==listingId))
             toast.success("listing deleted successfully")
@@ -75,7 +76,7 @@ const [showListingsErr, setShowListingsErr] = useState(false);
         }
     }
 
-console.log("listingshow",userListings.name);
+console.log("listingshow",userListings);
   return (
     <>
       <button
@@ -99,7 +100,7 @@ console.log("listingshow",userListings.name);
             >
               <Link to={`/listing/${listing._id}`}>
                 <img
-                  src={`http://localhost:3001/${listing.imageUrls[0]})`}
+                  src={`http://localhost:3001/${listing.imageUrls[0]}`}
                   alt="listing cover"
                   className="h-16 w-16 object-contain"
                 />

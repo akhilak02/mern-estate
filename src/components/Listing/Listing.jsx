@@ -20,43 +20,76 @@ import {
 } from "react-icons/fa";
 
 import Contact from "../contact/Contact";
+import DateTimePicker from "react-datetime-picker";
+import "react-datetime-picker/dist/DateTimePicker.css";
+import "react-calendar/dist/Calendar.css";
+import "react-clock/dist/Clock.css";
+import { toast } from "react-toastify";
 function Listing() {
-    SwiperCore.use([Navigation])
-    const params=useParams()
-     const currentUser = useSelector((state) => state.user.currentUser);
-    const[listing,setListing]=useState(null)
-    const[loading,setLoading]=useState(false)
-    const[error,setError]=useState(false)
-    const[copied,setCopied]=useState(false)
-    const[contact,setContact]=useState(false)
+  SwiperCore.use([Navigation]);
+  const params = useParams();
+  const currentUser = useSelector((state) => state.user.currentUser);
+  const [listing, setListing] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [contact, setContact] = useState(false);
+  const [value, setValue] = useState(new Date());//date set
+  const [showPicker, setShowPicker] = useState(false); // Control picker visibility
+  // Store the submitted date
+  const [submittedDate, setSubmittedDate] = useState(null);
 
   useEffect(() => {
     (async () => {
-        try {
-            setLoading(true)
-              const { data } = await axios.get(
-                `http://localhost:3001/backend/createlisting/get/${params.listingId}`
-              );
-              if (data.success === false) {
-                setError(true)
-                setLoading(false)
-                return;
-              }
-              
-              setListing(data.listing);
-              setLoading(false)
-              setError(false)
-        } catch (error) {
-            setError(true)
-            setLoading(false);
+      try {
+        setLoading(true);
+        const { data } = await axios.get(
+          `http://localhost:3001/backend/createlisting/get/${params.listingId}`
+        );
+        if (data.success === false) {
+          setError(true);
+          setLoading(false);
+          return;
         }
-    
+
+        setListing(data.listing);
+        setLoading(false);
+        setError(false);
+      } catch (error) {
+        setError(true);
+        setLoading(false);
+      }
     })();
-  },[params.listingId]);
+  }, [params.listingId]);
   // console.log("currentuse",currentUser)
   // console.log("userRef", listing.userRef);
   // console.log("currentuseId",currentUser._id)
-// console.log(listing.imageUrls);
+  // console.log(listing.imageUrls);
+  const handleButtonClick = () => {
+    setShowPicker(!showPicker); // Toggle picker visibility
+  };
+
+const handleSubmitDate = async () => {
+  try {
+    // Example of sending the selected date to your backend
+    const response = await axios.post(
+      `http://localhost:3001/backend/createlisting/book/${params.listingId}`,
+      {
+        date: value, // The selected date
+        userId: currentUser._id, // Include user info if necessary
+      }
+    );
+    console.log("Date submitted:", response.data);
+    setSubmittedDate(value);
+    toast("Date submited successfully")
+  } catch (error) {
+    console.error("Error submitting date:", error);
+    alert("Failed to submit the date.");
+  }
+};
+
+
+
   return (
     <main>
       {loading && (
@@ -118,7 +151,7 @@ function Listing() {
               </p>
               {listing.offer && (
                 <p className="bg-green-900 w-full max-w-[200px] text-white text-center p-1 rounded-md">
-                  {+listing.regularPrice - +listing.discountPrice}OFF
+                  {+listing.regularPrice - +listing.discountPrice} OFF
                 </p>
               )}
             </div>
@@ -150,6 +183,29 @@ function Listing() {
                 {listing.parking ? "Furnished" : "Unfurnished"}
               </li>
             </ul>
+            <div className="p-10">
+              <button
+                className="w-full bg-orange-900 text-white    text-center p-2 rounded-md mt-4"
+                onClick={handleButtonClick}
+              >
+                Book Your Visit
+              </button>
+              {showPicker && (
+                <div className="mt-4 relative">
+                  <div className=" text-center z-50 bg-white p-4 rounded shadow-lg w-100">
+                    <DateTimePicker onChange={setValue} value={value} />
+                    <button className="p-2 rounded-md ms-1 bg-orange-900 text-white font-semibold" onClick={handleSubmitDate}>
+                      submit
+                    </button>
+                  </div>
+                </div>
+              )}
+              {submittedDate && (
+                <p className="mt-4 text-green-600">
+                  Submitted Date: {submittedDate.toString()}
+                </p>
+              )}
+            </div>
             {currentUser && listing.userRef !== currentUser._id && !contact && (
               <button
                 onClick={() => setContact(true)}
@@ -158,7 +214,7 @@ function Listing() {
                 Contact Landlord
               </button>
             )}
-            {contact && <Contact listing={listing}/>}
+            {contact && <Contact listing={listing} />}
           </div>
         </div>
       )}
